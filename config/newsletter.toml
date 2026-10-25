@@ -1,13 +1,13 @@
 # AutoAX 데일리 뉴스레터 설정
 # 이 파일만 고치면 받는 사람, 주제, 관점, 발송 시각을 바꿀 수 있습니다.
 
-# 받을 Gmail 주소 (예시 값 그대로면 발송 단계에서 멈춥니다)
-recipient = "your-address@gmail.com"
+# 받을 Gmail 주소
+recipient = "moogm99@gmail.com"
 sender_name = "AutoAX 브리핑"
 
 language = "ko"
 timezone = "Asia/Seoul"
-send_time = "07:00"
+send_time = "10:00"
 
 # rotate: 날짜마다 주제 하나씩 돌아가며 / fixed: 항상 첫 번째 주제
 topic_mode = "rotate"
