@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-25",
+  "weekday": "일",
+  "edition": "주말판",
+  "topic": "데일리브리핑",
+  "interests": [
+    {
+      "name": "주가 추이",
+      "keywords": [
+        "코스피",
+        "코스닥",
+        "뉴욕증시",
+        "삼성전자 주가",
+        "SK하이닉스 주가",
+        "엔비디아 주가"
+      ]
+    },
+    {
+      "name": "경제·시장 뉴스",
+      "keywords": [
+        "금리",
+        "환율",
+        "물가",
+        "Fed",
+        "한국은행",
+        "경제 지표"
+      ]
+    },
+    {
+      "name": "AI·업무 자동화(AX)",
+      "keywords": [
+        "AI agent",
+        "AI 에이전트",
+        "생성형 AI",
+        "업무 자동화",
+        "AX",
+        "AI 전환"
+      ]
+    },
+    {
+      "name": "반도체·하드웨어",
+      "keywords": [
+        "반도체",
+        "HBM",
+        "파운드리",
+        "AI 칩",
+        "메모리 가격"
+      ]
+    },
+    {
+      "name": "마케팅·콘텐츠",
+      "keywords": [
+        "디지털 마케팅",
+        "콘텐츠 트렌드",
+        "광고 플랫폼",
+        "숏폼",
+        "크리에이터 이코노미"
+      ]
+    }
+  ],
+  "tickers": [
+    "코스피",
+    "코스닥",
+    "S&P 500",
+    "나스닥",
+    "삼성전자",
+    "SK하이닉스",
+    "엔비디아",
+    "원/달러 환율"
+  ],
+  "perspectives": [
+    {
+      "name": "핵심 숫자·데이터",
+      "file": "newsletters/2026-10-25_데일리브리핑/01_핵심-숫자-데이터.md"
+    },
+    {
+      "name": "원인·배경 분석",
+      "file": "newsletters/2026-10-25_데일리브리핑/02_원인-배경-분석.md"
+    },
+    {
+      "name": "실무 적용·시사점",
+      "file": "newsletters/2026-10-25_데일리브리핑/03_실무-적용-시사점.md"
+    },
+    {
+      "name": "향후 전망·일정",
+      "file": "newsletters/2026-10-25_데일리브리핑/04_향후-전망-일정.md"
+    }
+  ],
+  "prices_file": "newsletters/2026-10-25_데일리브리핑/00_시세.json",
+  "items_per_interest": 2,
+  "lookback_hours": 168,
+  "blocked_domains": [
+    "wsj.com",
+    "ft.com",
+    "bloomberg.com",
+    "economist.com",
+    "nytimes.com",
+    "washingtonpost.com",
+    "theinformation.com",
+    "medium.com",
+    "barrons.com",
+    "linkedin.com",
+    "facebook.com",
+    "instagram.com",
+    "x.com",
+    "twitter.com"
+  ],
+  "language": "ko",
+  "recipient": "moogm99@gmail.com",
+  "sender_name": "AutoAX 브리핑",
+  "workdir": "newsletters/2026-10-25_데일리브리핑",
+  "html": "newsletters/2026-10-25_데일리브리핑/newsletter.html",
+  "log": "newsletters/2026-10-25_데일리브리핑/run_log.md"
+}
