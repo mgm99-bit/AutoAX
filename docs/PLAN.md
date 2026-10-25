@@ -10,7 +10,7 @@
 | 1 기획서 | ✅ 완료 | 2026-10-25 승인 |
 | 2 메일 발송 환경 | 🔶 경로 A 완료, 경로 B 대기 | 커넥터 계정 `moogm99@gmail.com` 확인, 경로 A 테스트 메일 발송(메시지 ID `1a171ef7643afd80`), 설정에 받는 사람·10:00 반영. 경로 B는 사용자 컴퓨터에서 `--test` 실행 필요 |
 | 3 병렬 리서치 | ✅ 완료 | 서브에이전트 4개 병렬 실행(약 5분), `2026-10-25_데일리브리핑`(주말판)에 관점별 `.md` 4개 + `00_시세.json` 저장, 점검 통과(항목 40건, 시세 8/8). 확인 필요 3건(삼성전자·SK하이닉스 종가, SK하이닉스 실적일)은 `verified: false` 표시. WebFetch 불가로 모든 항목은 출처 2곳 대조 |
-| 4 HTML 뉴스레터 | ⏳ | |
+| 4 HTML 뉴스레터 | ✅ 완료 | Claude는 `content.json`(내용 선택)만 쓰고 `scripts/render_html.py`가 HTML 생성(시세 표는 `00_시세.json`에서 직접). `newsletter.html` 40.8KB·항목 15건·링크 57개, 점검 통과, 모바일 360px 확인 |
 | 5 실제 발송 | ⏳ | |
 | 6 통합 테스트·예약 | ⏳ | |
 
@@ -180,6 +180,7 @@ AutoAX/
 ├── scripts/
 │   ├── make_workdir.py               # {날짜}_데일리브리핑 폴더 생성 (한국 시간 기준)
 │   ├── check_research.py             # 리서치 점검
+│   ├── render_html.py                # content.json + 00_시세.json → newsletter.html
 │   ├── check_html.py                 # HTML 점검
 │   └── send_smtp.py                  # 경로 B 발송 (--test 지원)
 ├── .claude/
@@ -188,7 +189,7 @@ AutoAX/
 │   │   └── perspective-researcher.md   # 관점 하나 담당 (서브에이전트 × 4)
 │   └── skills/
 │       ├── newsletter-research/        # 3단계
-│       ├── newsletter-html/            # 4단계 (+ template.html)
+│       ├── newsletter-html/            # 4단계 (content.json 작성 규칙)
 │       ├── newsletter-send/            # 5단계
 │       └── newsletter-schedule/        # 6단계
 └── newsletters/
@@ -199,6 +200,7 @@ AutoAX/
         ├── 02_원인-배경-분석.md
         ├── 03_실무-적용-시사점.md
         ├── 04_향후-전망-일정.md
+        ├── content.json
         ├── newsletter.html
         └── run_log.md
 ```

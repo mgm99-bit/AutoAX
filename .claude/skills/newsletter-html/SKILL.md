@@ -1,41 +1,76 @@
 ---
 name: newsletter-html
-description: 업무 폴더의 관점별 리서치 .md 파일을 모아 이메일용 HTML 뉴스레터(newsletter.html)를 작성해 같은 폴더에 저장한다. 리서치가 끝난 뒤 뉴스레터 본문을 만들 때 사용한다.
+description: 업무 폴더의 관점별 리서치 .md와 00_시세.json을 바탕으로 실을 내용을 골라 content.json에 적고, scripts/render_html.py로 이메일용 newsletter.html을 만들어 같은 폴더에 저장한다. 리서치가 끝난 뒤 뉴스레터 본문을 만들 때 사용한다.
 ---
 
 # 뉴스레터 HTML 작성
 
+HTML을 직접 쓰지 않는다. **Claude는 내용만 고르고(content.json), 화면은 스크립트가 그린다.** 숫자 옮겨 적기 오류와 스타일 흔들림을 막기 위해서다. 시세 표는 스크립트가 `00_시세.json`에서 직접 읽는다.
+
 ## 입력
 
-업무 폴더 경로 (`newsletters/{날짜}_{주제}/`). 그 안의 `run.json`과 `NN_*.md` 파일.
+업무 폴더 (`newsletters/{날짜}_데일리브리핑/`): `run.json`, `00_시세.json`, `01~04_*.md`.
 
 ## 절차
 
-1. `run.json`과 모든 `NN_*.md`를 읽는다.
-2. 내용을 정리한다.
-   - **오늘의 핵심 3줄**: 관점들을 가로질러 가장 중요한 흐름 3개. 각 줄 끝에 근거 기사의 "출처" 링크(`{{HIGHLIGHT_n_URL}}`)를 단다.
-   - **관점별 섹션**: 관점 순서대로. 기사마다 제목(링크), 출처 매체(링크)·날짜, 요약 2~3줄, "왜 중요한가".
-   - **항목마다 출처 링크 필수**: 링크가 없는 항목은 싣지 않는다. 링크는 리서치 파일의 `링크:` 값을 그대로 쓴다 (새로 만들거나 고치지 않음).
-   - 여러 관점에 같은 기사가 있으면 처음 나온 곳에만 싣는다.
-   - "자료를 찾지 못함" 관점은 섹션에 "오늘은 새 소식이 없습니다" 한 줄만 둔다.
-3. `.claude/skills/newsletter-html/template.html`을 뼈대로 `{{...}}` 자리를 채운다. 반복되는 블록(`<!-- SECTION -->`~`<!-- /SECTION -->`, `<!-- ARTICLE -->`~`<!-- /ARTICLE -->`)은 필요한 만큼 복제한다. 이 표시 주석은 지우지 않는다 (점검 스크립트가 블록마다 링크를 확인한다).
-4. `{workdir}/newsletter.html`로 저장한다.
-5. 점검 스크립트를 돌린다.
+1. 관점별 `.md` 4개와 `00_시세.json`을 모두 읽는다.
+2. `{workdir}/content.json`을 쓴다 (형식은 아래). 고르는 기준:
+   - **관심사마다 최대 3항목**, 가능하면 관점 꼬리표가 겹치지 않게 (`숫자` `원인` `시사점` `전망`).
+   - 주가 추이 → 경제·시장 뉴스 → AI·업무 자동화(AX) → 반도체·하드웨어 → 마케팅·콘텐츠 순서.
+   - 여러 관점 파일에 같은 소식이 있으면 한 번만 싣는다.
+   - **오늘의 핵심 3줄**: 관심사를 가로지르는 가장 중요한 흐름 3개, 줄마다 근거 기사 링크.
+   - **일정**: 04 파일의 일정을 날짜순으로. 한국 시간 기준으로 적는다 (미 현지 발표는 한국 날짜·시각으로 바꾸고 괄호에 현지 표기).
+   - **링크는 리서치 파일에 있는 URL을 그대로** 쓴다. 새로 만들거나 고치지 않는다.
+   - 리서치 파일에 없는 사실·숫자를 더하지 않는다. "단일 출처", "추측" 표시는 그대로 살린다.
+   - 확인 필요한 값(`00_시세.json`의 `verified: false`, 출처끼리 엇갈린 날짜 등)은 `price_warnings` 또는 항목의 `warning`으로 ⚠ 표시한다.
+   - 투자 권유 표현을 쓰지 않는다.
+3. 렌더링하고 점검한다.
 
    ```bash
-   python3 scripts/check_html.py newsletters/{날짜}_{주제}/newsletter.html
+   python3 scripts/render_html.py {workdir}
+   python3 scripts/check_html.py {workdir}/newsletter.html
    ```
 
-   실패 항목이 있으면 고쳐서 다시 저장하고 통과할 때까지 반복한다.
-6. `{workdir}/run_log.md`에 `- HH:MM HTML 저장 (n KB, 기사 k건)` 을 추가한다.
+   점검이 실패하면 `content.json`을 고쳐 다시 렌더링한다.
+4. 링크 출처 확인: `newsletter.html`의 모든 링크가 리서치 파일(`0*.md`, `00_시세.json`)에 있는 URL인지 확인한다.
+5. `{workdir}/run_log.md`에 `- HH:MM HTML 저장 (n KB, 항목 k건, 링크 m개) — check_html.py 통과` 를 추가한다.
 
-## 이메일 HTML 규칙
+## content.json 형식
 
-- 표(`<table>`) 레이아웃, 최대 폭 640px, 가운데 정렬.
-- 스타일은 HTML 안에만 둔다: 모두 인라인 `style="..."` 속성. Gmail 등 메일 앱이 `<head>`의 `<style>`을 지우는 경우가 있어 인라인으로 통일한다.
-- 외부 파일·스크립트 금지: `<script>`, `on...=` 이벤트 속성, `<link>`(외부 CSS·웹폰트), `@import`, CSS `url()`, `src=`(이미지·iframe), `<form>`. 점검 스크립트가 모두 잡아낸다.
-- 이미지는 쓰지 않는다 (외부 파일이고, Gmail이 막는 경우도 많다).
-- 글꼴: `-apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`.
-- 모든 링크는 `https://`로 시작하는 절대 경로, `target="_blank"`.
-- 전체 파일 100KB 미만 (Gmail은 102KB를 넘으면 본문을 자른다).
-- 미리보기 문구(`{{PREHEADER}}`)에는 오늘의 핵심 첫 줄을 넣는다.
+```json
+{
+  "headline": "메일 제목에도 쓰는 오늘의 한 줄",
+  "preheader": "메일 목록 미리보기 문구",
+  "highlights": [{"text": "핵심 1", "url": "https://…"}, {…}, {…}],
+  "price_warnings": {"삼성전자": "⚠ 옆에 붙일 설명 (verified=false인 대상은 필수)"},
+  "sections": [
+    {
+      "interest": "주가 추이",
+      "items": [
+        {
+          "tag": "숫자 | 원인 | 시사점 | 전망",
+          "title": "항목 제목",
+          "url": "https://…",
+          "source": "매체 이름",
+          "date": "2026-10-25",
+          "summary": "2~3문장",
+          "why": "왜 중요한가 한 줄",
+          "warning": "(선택) 확인 필요 내용"
+        }
+      ]
+    }
+  ],
+  "schedule_title": "다음 주 일정 (10/26~10/30, 한국 시간)",
+  "schedule": [{"when": "10/29(목) 03:00", "event": "FOMC 금리 결정", "url": "https://…", "warning": "(선택)"}],
+  "footer_notes": ["(선택) 바닥글에 덧붙일 안내"]
+}
+```
+
+## 스크립트가 지키는 이메일 규칙 (고치지 말 것)
+
+- 표(table) 레이아웃, 최대 폭 640px, 360px 화면에서도 가로 스크롤 없음.
+- 스타일은 모두 HTML 안의 인라인 `style` 속성. `<style>`, `<script>`, `<link>`, `@import`, `src=`(이미지), CSS `url()`, `<form>` 없음.
+- 항목·핵심 줄·일정마다 출처 링크. 시세 표는 대상 이름이 출처 링크, 대조 출처는 표 아래 한 줄.
+- 오르면 빨강 ▲, 내리면 파랑 ▼ (한국식). 주말판은 주간 등락 열을 더한다.
+- 바닥글에 "투자 권유가 아님" 안내와 리서치 원본 폴더 이름.
+- 100KB 미만 (Gmail은 102KB를 넘으면 본문을 자른다).
