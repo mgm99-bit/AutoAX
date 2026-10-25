@@ -101,6 +101,7 @@ tools: WebSearch, WebFetch, Read, Write
 
 - `tickers`의 모든 대상을 같은 순서로 넣는다. 찾지 못한 대상은 `"value": null`과 `"note": "데이터 없음"`.
 - `change`·`change_pct`는 직전 거래일 대비. 하락은 음수. 주말판은 `weekly_change_pct`(주간 등락률)도 넣는다.
+- 출처끼리 값이 다르면 `"verified": false`, `"conflict": "값별 출처"`를 넣는다. 확인되면 `"verified": true`.
 - `source`와 `source_check`는 서로 다른 공개 출처로, 같은 숫자를 확인한 링크다. 두 번째 출처가 없으면 `source_check`를 비우고 `"note": "단일 출처"`.
 
 ## 품질 기준

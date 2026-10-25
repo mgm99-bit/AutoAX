@@ -1,0 +1,103 @@
+{
+  "collected_at": "2026-10-25",
+  "items": [
+    {
+      "name": "코스피",
+      "value": 5550.3,
+      "change": 16.53,
+      "change_pct": 0.3,
+      "weekly_change_pct": -2.08,
+      "as_of": "2026-10-23 종가",
+      "source": "https://www.fnnews.com/news/202610231539587118",
+      "source_check": "https://www.news1.kr/finance/general-stock/6330143",
+      "note": "주간 등락률은 10/16 종가 5668.05 대비 (https://www.g-enews.com/article/Securities/2026/10/20261016155516727923c501012_1). 장중 저점 5305.98",
+      "verified": true
+    },
+    {
+      "name": "코스닥",
+      "value": 751.69,
+      "change": -12.41,
+      "change_pct": -1.62,
+      "weekly_change_pct": -5.42,
+      "as_of": "2026-10-23 종가",
+      "source": "https://www.news1.kr/finance/general-stock/6330143",
+      "source_check": "https://fnnews.com/news/202610231541257462",
+      "note": "주간 등락률은 10/16 종가 794.78 대비 계산 (https://www.news1.kr/finance/general-stock/6322655). 인베스팅닷컴 표는 749.23(-1.95%)로 달라 다수 보도치 사용",
+      "verified": true
+    },
+    {
+      "name": "S&P 500",
+      "value": 7623.68,
+      "change": -39.75,
+      "change_pct": -0.52,
+      "weekly_change_pct": -0.47,
+      "as_of": "2026-10-23 종가 (미 동부시간)",
+      "source": "https://www.cnbc.com/2026/10/22/stock-market-today-live-update.html",
+      "source_check": "https://deanfi.com/insights/marketpulse/2026-10-23/",
+      "note": "주간 등락률은 10/16 종가 7659.44 대비 계산 (https://abcnews.com/Business/wireStory/major-us-stock-indexes-fared-friday-10162026-137331951)",
+      "verified": true
+    },
+    {
+      "name": "나스닥",
+      "value": 25955.34,
+      "change": -53.52,
+      "change_pct": -0.21,
+      "weekly_change_pct": -0.71,
+      "as_of": "2026-10-23 종가 (미 동부시간)",
+      "source": "https://www.cnbc.com/2026/10/22/stock-market-today-live-update.html",
+      "source_check": "https://www.tradingkey.com/analysis/stocks/us-stocks/262236830-us-market-close-dow-drop-consumer-healthcare-chips-rebound-crowdstrike-tradingkey",
+      "note": "나스닥 종합지수. 주간 등락률은 10/16 종가 26140.03 대비 계산 (https://abcnews.com/Business/wireStory/major-us-stock-indexes-fared-friday-10162026-137331951)",
+      "verified": true
+    },
+    {
+      "name": "삼성전자",
+      "value": 213500,
+      "change": -1000,
+      "change_pct": -0.47,
+      "weekly_change_pct": -0.93,
+      "as_of": "2026-10-23 종가",
+      "source": "https://www.cbci.co.kr/news/articleView.html?idxno=618761",
+      "source_check": "",
+      "note": "단일 출처(CBC뉴스). 다음 금융 목록도 213,500원(-0.47%)으로 검색됐으나 개별 URL 미확인, 한경은 '0.47% 상승'으로 방향을 반대로 표기 — 확인 필요. 주간 등락률은 10/16 종가 215,500원 대비 (https://www.specialtimes.co.kr/news/articleView.html?idxno=474996)",
+      "verified": false,
+      "conflict": "한경 시세 페이지(https://markets.hankyung.com/stock/005930)는 215,500원(+0.47%). 전일 종가 214,500원 기준 두 값 모두 가능 — 확정 불가"
+    },
+    {
+      "name": "SK하이닉스",
+      "value": 1277000,
+      "change": 54000,
+      "change_pct": 4.42,
+      "weekly_change_pct": 0.39,
+      "as_of": "2026-10-23 종가",
+      "source": "https://news.jkn.co.kr/post/1044603",
+      "source_check": "https://www.ddaily.co.kr/page/view/2026102315561485234",
+      "note": "일부 매체(탑스타뉴스·머니투데이 일부 기사)는 1,263,000원(+3.27%)으로 표기 — 다수 보도치 4.42% 사용. 주간 등락률은 10/16 종가 1,272,000원 대비 (https://www.specialtimes.co.kr/news/articleView.html?idxno=474996)",
+      "verified": false,
+      "conflict": "1,277,000원(+4.42%, 다수) / 1,272,000원(+4.01%, 02_원인-배경-분석) / 1,263,000원(+3.27%, 일부) — 보도마다 다름"
+    },
+    {
+      "name": "엔비디아",
+      "value": 210.96,
+      "change": -1.25,
+      "change_pct": -0.59,
+      "weekly_change_pct": -1.48,
+      "as_of": "2026-10-23 종가 (미 동부시간, 달러)",
+      "source": "https://finance.yahoo.com/quote/NVDA/",
+      "source_check": "https://www.cnbc.com/quotes/NVDA",
+      "note": "주간 등락률은 10/16 종가 $214.13 대비 (https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-october-19-2026/). 인베스팅닷컴 표는 211.46으로 다름",
+      "verified": true
+    },
+    {
+      "name": "원/달러 환율",
+      "value": 1324.6,
+      "change": 0.4,
+      "change_pct": 0.03,
+      "weekly_change_pct": -0.51,
+      "as_of": "2026-10-23 오후 3시30분 주간 거래 종가",
+      "source": "https://www.fnnews.com/news/202610231539221037",
+      "source_check": "https://view.asiae.co.kr/article/2026102315350976824",
+      "note": "주간 등락률은 10/16 주간 종가 1331.4원 대비 (https://view.asiae.co.kr/en/article/2026101615334506679). 음수 = 원화 강세",
+      "verified": true
+    }
+  ]
+}
