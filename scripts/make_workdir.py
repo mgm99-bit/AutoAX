@@ -84,6 +84,7 @@ def main() -> None:
         "perspectives": perspectives,
         "items_per_perspective": cfg.get("items_per_perspective", 3),
         "lookback_hours": cfg.get("lookback_hours", 24),
+        "blocked_domains": cfg.get("blocked_domains", []),
         "language": cfg.get("language", "ko"),
         "recipient": cfg.get("recipient", ""),
         "sender_name": cfg.get("sender_name", "AutoAX 브리핑"),

@@ -54,7 +54,7 @@ CRON_TZ=Asia/Seoul
 43 6 * * * cd /path/to/autoax && claude -p "오늘 뉴스레터 만들어 줘" --agent newsletter-orchestrator --permission-mode acceptEdits >> newsletters/cron.log 2>&1
 ```
 
-- Gmail 커넥터를 쓸 수 없는 환경이면 `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD`를 cron 환경에 넣어 SMTP로 보낸다.
+- Gmail 커넥터를 쓸 수 없는 환경이면 발송 경로 B(SMTP)로 보낸다. 계정 정보는 저장소 루트의 `.env`에서 읽으므로 cron에 비밀번호를 적지 않는다.
 - macOS는 cron 대신 `launchd`, Windows는 작업 스케줄러에 같은 명령을 등록한다.
 
 ## 확인

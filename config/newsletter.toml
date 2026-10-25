@@ -15,6 +15,15 @@ topic_mode = "rotate"
 items_per_perspective = 3
 lookback_hours = 24        # 결과가 적으면 72시간까지 늘려 다시 찾습니다
 
+# 리서치는 로그인·결제 없이 읽을 수 있는 공개 소스만 씁니다.
+# 아래 도메인은 검색 단계에서 아예 제외합니다 (유료 구독·로그인 필요).
+# 목록에 없더라도 원문이 로그인·결제 화면으로 막히면 리서처가 버립니다.
+blocked_domains = [
+  "wsj.com", "ft.com", "bloomberg.com", "economist.com", "nytimes.com",
+  "washingtonpost.com", "theinformation.com", "medium.com",
+  "linkedin.com", "facebook.com", "instagram.com", "x.com", "twitter.com",
+]
+
 # 관심 주제 — 필요한 만큼 [[topics]] 블록을 추가하세요.
 [[topics]]
 name = "AI 에이전트"

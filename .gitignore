@@ -1,0 +1,8 @@
+# SMTP 계정 정보 (발송 경로 B) — 절대 커밋하지 않음
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.pyc
+newsletters/cron.log

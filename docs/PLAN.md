@@ -8,6 +8,17 @@
 - 관점별 리서치 결과(`.md`)와 완성한 뉴스레터(`newsletter.html`)는 그 폴더에 바로 저장한다.
 - 리서치 · HTML 작성 · 메일 발송 · 예약 실행은 각각 독립된 스킬로 나눈다.
 
+### 지켜야 할 조건
+
+| 단계 | 조건 | 어디서 지키나 |
+|---|---|---|
+| 리서치 | 관심사를 관점별로 나누고 관점마다 서브에이전트로 병렬 리서치 | `newsletter-research` 스킬 → `perspective-researcher` 동시 실행 |
+| 리서치 | 로그인·결제 없는 공개 소스만 사용 | 설정의 `blocked_domains`를 검색에서 제외 + 원문이 막히면 버림 + `check_research.py` |
+| 작성 | 항목마다 출처 링크 | 양식의 기사·핵심 줄마다 링크 자리 + `check_html.py`가 블록마다 확인 |
+| 작성 | 스타일은 HTML 안에, 외부 파일·스크립트 금지 | 인라인 `style` 속성만 사용 + `check_html.py`가 `<script>`·`<link>`·`src=`·`url()` 등을 잡음 |
+| 발송 A | 연결된 Gmail 커넥터, HTML은 메일 본문 | `send_message`의 `htmlBody` 사용, `attachments` 안 씀 |
+| 발송 B | Gmail SMTP, 계정 정보는 루트 `.env`, 앱 비밀번호는 코드·기획서에 안 적음, HTML은 본문 | `send_smtp.py`가 `.env`만 읽음, `.env`는 `.gitignore`, `text/html` 본문 파트 |
+
 ## 2. 전체 흐름
 
 ```
@@ -26,9 +37,9 @@
      ├─ 2. 작성      newsletter-html 스킬
      │               → 관점별 결과를 합쳐 template.html 양식으로 newsletter.html 저장
      │
-     ├─ 3. 발송      newsletter-send 스킬
-     │               → Gmail 커넥터(send_message, htmlBody)로 발송
-     │               → 실패 시 SMTP 스크립트로 대체 발송
+     ├─ 3. 발송      newsletter-send 스킬 (HTML은 첨부가 아니라 메일 본문)
+     │               → 경로 A: 연결된 Gmail 커넥터(send_message, htmlBody)
+     │               → 경로 B: A가 안 되면 Gmail SMTP (계정 정보는 루트 .env)
      │
      └─ 4. 기록      run_log.md에 단계별 결과 저장 (+ 선택: 보관용 push / Drive 업로드)
 ```
@@ -39,14 +50,18 @@
 autoax/
 ├── CLAUDE.md                          # 저장소 규칙. 뉴스레터 요청이 오면 오케스트레이터 절차를 따르게 함
 ├── README.md                          # 사용법 요약
+├── .env                               # (사용자가 직접 만듦, 커밋 안 됨) 경로 B SMTP 계정 정보
+├── .env.example                       # .env 형식 예시 (빈 값)
+├── .gitignore                         # .env 제외
 ├── docs/
 │   └── PLAN.md                        # 이 기획서
 ├── config/
 │   └── newsletter.toml                # 받는 사람, 관심 주제, 관점, 발송 시각 등 사용자 설정
 ├── scripts/
 │   ├── make_workdir.py                # 오늘 날짜(KST) + 주제로 업무 폴더 생성, 실행 정보 JSON 출력
-│   ├── check_html.py                  # 완성 HTML 점검 (크기, 남은 자리 표시, 링크, 금지 태그)
-│   └── send_smtp.py                   # Gmail 커넥터가 없을 때 쓰는 대체 발송 (앱 비밀번호)
+│   ├── check_research.py              # 리서치 점검 (기사마다 링크, 로그인·결제 소스 없음)
+│   ├── check_html.py                  # HTML 점검 (항목마다 링크, 외부 파일·스크립트 없음, 크기)
+│   └── send_smtp.py                   # 경로 B: Gmail SMTP 발송 (.env에서 계정 정보 읽음)
 ├── .claude/
 │   ├── agents/
 │   │   ├── newsletter-orchestrator.md # 전체 파이프라인 담당 (메인 에이전트)
@@ -80,6 +95,9 @@ autoax/
 | `[[topics]]` | 관심 주제 목록. 주제마다 `name`, `keywords`, `perspectives`(관점 목록), `exclude`(제외어) |
 | `items_per_perspective` | 관점마다 뉴스레터에 넣을 기사 수 (기본 3) |
 | `lookback_hours` | 리서치 대상 기간 (기본 24시간, 결과가 적으면 72시간까지 늘림) |
+| `blocked_domains` | 로그인·결제가 필요해 검색에서 빼는 도메인 목록 |
+
+SMTP 계정 정보(경로 B)는 이 파일이 아니라 루트의 `.env`에 둔다.
 
 주제 선택 규칙: `rotate`이면 `날짜 순번 % 주제 수`로 고르므로, 같은 날 다시 실행해도 같은 주제가 나온다.
 
@@ -114,8 +132,9 @@ autoax/
 
 ### 6-2. `perspective-researcher` (서브에이전트)
 
-- 입력: 주제, 관점, 키워드, 제외어, 기간, 기사 수, 저장할 파일 경로
-- 도구: `WebSearch`, `WebFetch`, `Read`, `Write`
+- 입력: 주제, 관점, 키워드, 제외어, 제외 도메인, 기간, 기사 수, 저장할 파일 경로
+- 도구: `WebSearch`, `WebFetch`, `Read`, `Write` (로그인이 필요한 도구·커넥터는 주지 않는다)
+- 관점 하나에 서브에이전트 하나. 오케스트레이터가 한 번에 모두 띄워 병렬로 돈다.
 - 출력: 지정 경로에 `.md` 파일을 저장하고, 오케스트레이터에는 한 줄 요약만 돌려준다 (본문은 파일에 있으니 대화 맥락을 아낀다).
 
 ## 7. 스킬 설계
@@ -128,21 +147,40 @@ autoax/
 | `newsletter-schedule` | 처음 설정할 때, 시각을 바꿀 때 | 발송 시각, 시간대 | 예약 작업 ID |
 
 ### 7-1. 리서치 (`newsletter-research`)
-1. 관점마다 `perspective-researcher`를 한 번에 동시에 실행한다.
-2. 각 서브에이전트는 기간 안의 기사를 검색어 2~4개로 찾고, 원문을 열어 사실을 확인한 뒤 고른다.
-3. 기사마다 제목, 출처, 날짜, URL, 3줄 요약, "왜 중요한가" 한 줄을 적는다.
-4. 같은 뉴스를 여러 관점이 다루면 오케스트레이터가 HTML 단계에서 한 번만 싣는다.
-5. 품질 기준: 출처 URL이 없는 내용 금지, 기간 밖 기사는 "배경"으로만 표시, 추측은 추측이라고 쓴다.
+1. 설정의 관심 주제를 관점(예: 기술 동향 / 산업·비즈니스 / 정책·규제)으로 나눈다.
+2. 관점마다 `perspective-researcher`를 한 메시지에서 동시에 실행한다 (병렬).
+3. 각 서브에이전트는 기간 안의 기사를 검색어 2~4개로 찾고, 원문을 열어 사실을 확인한 뒤 고른다.
+4. **공개 소스만**: 검색할 때 `blocked_domains`를 제외하고, 원문이 로그인·구독·결제 화면으로 막히면 버린다. 캐시·아카이브로 유료 기사를 여는 우회도 쓰지 않는다.
+5. 기사마다 제목, 출처, 날짜, URL, 3줄 요약, "왜 중요한가" 한 줄을 적는다.
+6. 모두 끝나면 `check_research.py`로 기사마다 링크가 있는지, 제외 도메인 링크가 없는지 확인한다.
+7. 같은 뉴스를 여러 관점이 다루면 HTML 단계에서 한 번만 싣는다.
 
 ### 7-2. HTML 작성 (`newsletter-html`)
-- 이메일 클라이언트 호환을 위해 표(table) 레이아웃, 인라인 스타일, 최대 폭 640px, 외부 CSS·JS 금지.
-- 구성: 머리말(날짜·주제) → 오늘의 핵심 3줄 → 관점별 섹션(기사 카드) → 출처 목록 → 바닥글.
-- 저장 직후 점검: 모든 기사에 링크가 있는지, `{{` 같은 양식 자리 표시가 남지 않았는지, 파일 크기가 100KB 미만인지(Gmail은 102KB가 넘으면 본문을 자른다).
+- 구성: 머리말(날짜·주제) → 오늘의 핵심 3줄 → 관점별 섹션(기사 카드) → 바닥글.
+- **항목마다 출처 링크**: 핵심 3줄은 줄마다 "출처" 링크, 기사 카드는 제목과 매체 이름에 원문 링크. 링크 없는 항목은 싣지 않는다.
+- **스타일은 HTML 안에**: 모든 스타일을 인라인 `style` 속성으로. (`<head>`의 `<style>`은 일부 메일 앱이 지우므로 쓰지 않는다.)
+- **외부 파일·스크립트 금지**: `<script>`, 이벤트 속성, `<link>`, `@import`, CSS `url()`, 이미지·iframe(`src=`), `<form>` 모두 쓰지 않는다.
+- 표(table) 레이아웃, 최대 폭 640px, 100KB 미만 (Gmail은 102KB가 넘으면 본문을 자른다).
+- 저장 직후 `check_html.py`로 위 항목과 남은 `{{자리 표시}}`를 확인하고, 통과할 때까지 고친다.
 
 ### 7-3. 메일 발송 (`newsletter-send`)
-- 1순위: Gmail 커넥터 `send_message` — `to`=받는 사람, `subject`=`[AutoAX] {날짜} {주제} 브리핑`, `htmlBody`=HTML 전체, `body`=텍스트 요약(HTML을 못 보는 메일 앱용).
-- 2순위: `scripts/send_smtp.py` — 환경 변수 `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD`(Google 앱 비밀번호) 사용.
-- 같은 폴더로 두 번 보내지 않도록 `run_log.md`에 메시지 ID가 있으면 건너뛴다.
+
+두 경로 모두 **HTML은 첨부가 아니라 메일 본문**으로 넣는다. 제목은 `[AutoAX] {날짜} {주제} 브리핑`.
+
+| | 경로 A (1순위) | 경로 B (대체) |
+|---|---|---|
+| 방법 | 연결된 Gmail 커넥터 `send_message` | Gmail SMTP (`smtp.gmail.com:465`) — `scripts/send_smtp.py` |
+| 본문 | `htmlBody`=HTML 전체, `body`=텍스트 요약 | `multipart/alternative` = `text/plain` 요약 + `text/html` 뉴스레터 |
+| 첨부 | `attachments` 안 씀 | 첨부 파트 없음 (`--dry-run`으로 구조 확인) |
+| 계정 | 커넥터에 연결된 Gmail 계정 | 루트 `.env`의 `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD` |
+| 언제 | 기본 | 커넥터가 없거나 실패했을 때, 로컬 실행 |
+
+경로 B의 계정 정보 관리:
+- `.env`는 사용자가 `.env.example`을 복사해 직접 채운다. `.gitignore`에 있어 커밋되지 않는다.
+- 앱 비밀번호는 코드, 명령줄 인자, 이 기획서, 로그, 대화 어디에도 적지 않는다. 스크립트는 `.env` 파일에서만 읽는다.
+- 클라우드 예약 실행에는 `.env`가 없으므로(커밋하지 않으니까) 경로 A를 쓴다. 경로 B는 사용자 컴퓨터에서 돌릴 때 쓴다.
+
+같은 폴더로 두 번 보내지 않도록 `run_log.md`에 메시지 ID가 있으면 건너뛴다.
 
 ### 7-4. 예약 실행 (`newsletter-schedule`)
 - 1순위: 클라우드 예약 작업 — 매일 한국 시간 기준으로 실행, 실행마다 새 세션, Gmail 커넥터 허용. 컴퓨터가 꺼져 있어도 돈다.
@@ -155,13 +193,14 @@ autoax/
 
 1. **Git push** (권장): 발송 후 업무 폴더를 커밋해 `newsletters` 브랜치에 올린다. 이 세션에 저장소 쓰기 권한이 있어야 한다 (현재는 Claude GitHub 앱 설치 전이라 막혀 있음).
 2. **Google Drive**: Drive 커넥터로 `AutoAX/{날짜}_{주제}/` 폴더에 같은 파일을 올린다.
-3. 메일 자체가 보관본 역할도 한다 (HTML 본문 + 원하면 리서치 `.md` 첨부).
+3. 받은 메일 자체가 뉴스레터 보관본 역할도 한다 (HTML은 본문에 들어 있음).
 
 ## 9. 준비물 체크리스트
 
 - [ ] `config/newsletter.toml`의 `recipient`에 받을 Gmail 주소 입력
 - [ ] 관심 주제와 관점 입력 (`[[topics]]`)
-- [ ] claude.ai에서 Gmail 커넥터 연결 (예약 작업에 Gmail 허용)
+- [ ] 경로 A: claude.ai에서 Gmail 커넥터 연결 (예약 작업에 Gmail 허용)
+- [ ] 경로 B (로컬에서 쓸 때): `cp .env.example .env` 후 Gmail 주소와 앱 비밀번호를 직접 입력
 - [ ] (보관용) Claude GitHub 앱을 AutoAX 저장소에 설치 → push 가능
 - [ ] `newsletter-schedule` 스킬로 예약 등록
 - [ ] 첫 실행을 수동으로 해서 메일 모양 확인
