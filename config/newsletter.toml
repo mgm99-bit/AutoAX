@@ -1,5 +1,5 @@
 # AutoAX 데일리 뉴스레터 설정
-# 이 파일만 고치면 받는 사람, 주제, 관점, 발송 시각을 바꿀 수 있습니다.
+# 이 파일만 고치면 받는 사람, 관심사, 관점, 발송 시각을 바꿀 수 있습니다.
 
 # 받을 Gmail 주소
 recipient = "moogm99@gmail.com"
@@ -9,33 +9,51 @@ language = "ko"
 timezone = "Asia/Seoul"
 send_time = "10:00"
 
-# rotate: 날짜마다 주제 하나씩 돌아가며 / fixed: 항상 첫 번째 주제
-topic_mode = "rotate"
+# 업무 폴더 이름: newsletters/{YYYY-MM-DD}_{folder_topic}/
+folder_topic = "데일리브리핑"
 
-items_per_perspective = 3
-lookback_hours = 24        # 결과가 적으면 72시간까지 늘려 다시 찾습니다
+# 관심사마다 뉴스레터에 넣을 최대 항목 수 (관점 하나 기준)
+items_per_interest = 2
+lookback_hours = 24          # 평일 기준. 월요일·휴장 다음 날은 72시간까지 늘림
+weekend_lookback_hours = 168 # 토·일 주말판: 한 주 정리
 
 # 리서치는 로그인·결제 없이 읽을 수 있는 공개 소스만 씁니다.
 # 아래 도메인은 검색 단계에서 아예 제외합니다 (유료 구독·로그인 필요).
-# 목록에 없더라도 원문이 로그인·결제 화면으로 막히면 리서처가 버립니다.
+# 목록에 없더라도 로그인·결제 화면으로 막히는 기사는 리서처가 버립니다.
 blocked_domains = [
   "wsj.com", "ft.com", "bloomberg.com", "economist.com", "nytimes.com",
-  "washingtonpost.com", "theinformation.com", "medium.com",
+  "washingtonpost.com", "theinformation.com", "medium.com", "barrons.com",
   "linkedin.com", "facebook.com", "instagram.com", "x.com", "twitter.com",
 ]
 
-# 관심 주제 — 필요한 만큼 [[topics]] 블록을 추가하세요.
-[[topics]]
-name = "AI 에이전트"
-keywords = ["AI agent", "AI 에이전트", "agentic AI", "Claude", "LLM"]
-perspectives = ["기술 동향", "산업·비즈니스", "정책·규제"]
-exclude = ["코인", "광고"]
+# 관점 — 관점마다 서브에이전트 하나가 맡아 병렬로 리서치합니다.
+perspectives = ["핵심 숫자·데이터", "원인·배경 분석", "실무 적용·시사점", "향후 전망·일정"]
 
-[[topics]]
-name = "업무 자동화"
-keywords = ["업무 자동화", "RPA", "workflow automation", "AX", "AI 전환"]
-perspectives = ["도구·제품", "도입 사례", "생산성 연구"]
-exclude = []
+# 관심사 — 모든 관점이 아래 관심사를 각자 자기 관점으로 훑습니다.
+# 주의: [[interests]] 블록 아래에 쓴 설정은 마지막 관심사에 속하게 됩니다.
+#       공통 설정은 반드시 이 줄보다 위에 쓰세요.
+[[interests]]
+name = "주가 추이"
+keywords = ["코스피", "코스닥", "뉴욕증시", "삼성전자 주가", "SK하이닉스 주가", "엔비디아 주가"]
+# 시세 표에 넣을 대상 (핵심 숫자·데이터 관점이 00_시세.json으로 수집)
+tickers = ["코스피", "코스닥", "S&P 500", "나스닥", "삼성전자", "SK하이닉스", "엔비디아", "원/달러 환율"]
+
+[[interests]]
+name = "경제·시장 뉴스"
+keywords = ["금리", "환율", "물가", "Fed", "한국은행", "경제 지표"]
+
+[[interests]]
+name = "AI·업무 자동화(AX)"
+keywords = ["AI agent", "AI 에이전트", "생성형 AI", "업무 자동화", "AX", "AI 전환"]
+
+[[interests]]
+name = "반도체·하드웨어"
+keywords = ["반도체", "HBM", "파운드리", "AI 칩", "메모리 가격"]
+
+[[interests]]
+name = "마케팅·콘텐츠"
+keywords = ["디지털 마케팅", "콘텐츠 트렌드", "광고 플랫폼", "숏폼", "크리에이터 이코노미"]
+
 
 # 예약 작업 정보 (newsletter-schedule 스킬이 등록 후 채웁니다)
 # schedule_id = ""
