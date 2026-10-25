@@ -40,7 +40,9 @@ Gmail 커넥터의 `send_message` 도구를 호출한다. 도구가 안 보이�
 
 ```
 GMAIL_ADDRESS=보내는 Gmail 주소
-GMAIL_APP_PASSWORD=Google 앱 비밀번호
+GMAIL_APP_PASSWORD=(16자리 앱 비밀번호 — 사용자가 직접 입력)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587        # 587이면 STARTTLS, 465면 SSL
 ```
 
 - `.env`는 `.gitignore`에 있어 커밋되지 않는다. 형식 예시는 `.env.example`(빈 값)에 있다.
@@ -48,6 +50,8 @@ GMAIL_APP_PASSWORD=Google 앱 비밀번호
 - `.env`가 없으면 사용자에게 `.env.example`을 복사해 직접 채워 달라고 안내하고 멈춘다. 대신 만들어 주겠다며 비밀번호를 물어보지 않는다.
 
 ```bash
+# 처음 설정했을 때: 본문만 있는 테스트 메일을 내 주소로
+python3 scripts/send_smtp.py --test
 # 먼저 구조 확인 (보내지 않음): text/plain + text/html 본문만 있고 첨부가 없어야 한다
 python3 scripts/send_smtp.py {workdir} --dry-run
 # 실제 발송
@@ -66,3 +70,7 @@ python3 scripts/send_smtp.py {workdir}
 ## 실패 알림
 
 리서치가 전부 실패해 뉴스레터를 만들지 못한 경우에는, 같은 순서(A → B)로 제목 `[AutoAX] {date} 뉴스레터 생성 실패`, 본문에 실패 이유와 업무 폴더 경로만 담아 보낸다.
+
+## 환경 제약
+
+클라우드 세션은 웹(HTTPS) 연결만 허용해 `smtp.gmail.com`에 닿지 않는다 (주소 조회 실패). 클라우드에서는 경로 A를 쓰고, 경로 B는 사용자 컴퓨터에서 실행한다.

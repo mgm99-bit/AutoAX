@@ -169,16 +169,17 @@ SMTP 계정 정보(경로 B)는 이 파일이 아니라 루트의 `.env`에 둔�
 
 | | 경로 A (1순위) | 경로 B (대체) |
 |---|---|---|
-| 방법 | 연결된 Gmail 커넥터 `send_message` | Gmail SMTP (`smtp.gmail.com:465`) — `scripts/send_smtp.py` |
+| 방법 | 연결된 Gmail 커넥터 `send_message` | Gmail SMTP (`.env`의 `SMTP_HOST`·`SMTP_PORT`, 기본 `smtp.gmail.com:587` STARTTLS) — `scripts/send_smtp.py` |
 | 본문 | `htmlBody`=HTML 전체, `body`=텍스트 요약 | `multipart/alternative` = `text/plain` 요약 + `text/html` 뉴스레터 |
 | 첨부 | `attachments` 안 씀 | 첨부 파트 없음 (`--dry-run`으로 구조 확인) |
-| 계정 | 커넥터에 연결된 Gmail 계정 | 루트 `.env`의 `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD` |
+| 계정 | 커넥터에 연결된 Gmail 계정 | 루트 `.env`의 `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD`, `SMTP_HOST`, `SMTP_PORT` |
 | 언제 | 기본 | 커넥터가 없거나 실패했을 때, 로컬 실행 |
 
 경로 B의 계정 정보 관리:
 - `.env`는 사용자가 `.env.example`을 복사해 직접 채운다. `.gitignore`에 있어 커밋되지 않는다.
 - 앱 비밀번호는 코드, 명령줄 인자, 이 기획서, 로그, 대화 어디에도 적지 않는다. 스크립트는 `.env` 파일에서만 읽는다.
-- 클라우드 예약 실행에는 `.env`가 없으므로(커밋하지 않으니까) 경로 A를 쓴다. 경로 B는 사용자 컴퓨터에서 돌릴 때 쓴다.
+- 클라우드 예약 실행에는 `.env`가 없고(커밋하지 않으니까), 클라우드 환경은 웹(HTTPS) 외의 연결(SMTP 포트)을 막으므로 경로 A를 쓴다. 경로 B는 사용자 컴퓨터에서 돌릴 때 쓴다.
+- 설정 확인용 테스트: `python3 scripts/send_smtp.py --test` — 본문(텍스트)만 있는 메일을 `GMAIL_ADDRESS`로 보낸다.
 
 같은 폴더로 두 번 보내지 않도록 `run_log.md`에 메시지 ID가 있으면 건너뛴다.
 
